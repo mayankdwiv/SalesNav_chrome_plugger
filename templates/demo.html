@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Search Options</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #f5f5f5;
+      margin: 0;
+    }
+
+    .search-card {
+      background-color: white;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      padding: 20px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      width: 300px;
+    }
+
+    .search-card h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .search-card p {
+      font-size: 14px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .search-button {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      font-size: 16px;
+      font-weight: bold;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: white;
+      background-color: #0073b1;
+      transition: background-color 0.3s ease;
+    }
+
+    .search-button:last-child {
+      background-color: #4caf50;
+    }
+
+    .search-button:hover {
+      opacity: 0.9;
+    }
+  </style>
+</head>
+<body>
+  <div class="search-card">
+    <h2>Start New Search</h2>
+    <p>Choose your search type to begin</p>
+    <form action="/Lead" method="post">
+        <button class="search-button" type="submit">Lead Search</button>
+    </form>
+    <form action="/Account" method="post">
+        <button class="search-button" type="submit">Account Search</button>
+    </form>
+  </div>
+</body>
+</html>

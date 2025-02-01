@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Scraping in Progress</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            background: linear-gradient(to bottom, #ffffff, #f1f1f1);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .container {
+            text-align: center;
+            max-width: 600px;
+            padding: 20px;
+            background-color: #f9f9f9;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            color: #444;
+        }
+
+        p {
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            color: #666;
+        }
+
+        .loader {
+            width: 80px;
+            height: 80px;
+            border: 10px solid rgba(0, 0, 0, 0.1);
+            border-top: 10px solid #333;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin: 0 auto 20px auto;
+        }
+
+        @keyframes spin {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .dots {
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            background-color: #333;
+            border-radius: 50%;
+            animation: bounce 1.5s infinite ease-in-out;
+        }
+
+        .dot:nth-child(1) {
+            animation-delay: 0s;
+        }
+        .dot:nth-child(2) {
+            animation-delay: 0.3s;
+        }
+        .dot:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        @keyframes bounce {
+            0%, 80%, 100% {
+                transform: scale(0);
+            }
+            40% {
+                transform: scale(1);
+            }
+        }
+
+        .message {
+            font-size: 1rem;
+            margin-top: 20px;
+            opacity: 0.8;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="loader"></div>
+        <h1>Scraping in Progress...</h1>
+        
+        <div class="dots">
+            <div class="dot"></div>
+            <div class="dot"></div>
+            <div class="dot"></div>
+        </div>
+        <div class="message">
+            <p id="fact">Did you know? The Eiffel Tower can grow by up to 6 inches in the summer due to the expansion of metal in the heat.</p>
+        </div>
+    </div>
+
+    <script>
+        // Array of facts to display
+        const facts = [
+            "Did you know? The Eiffel Tower can grow by up to 6 inches in the summer due to the expansion of metal in the heat.",
+            "Did you know? Honey never spoils. Archaeologists have found pots of honey in ancient tombs that are over 3,000 years old!",
+            "Did you know? Octopuses have three hearts and blue blood due to a copper-based molecule called hemocyanin.",
+            "Did you know? A day on Venus is longer than a year on Venus, as it takes 243 Earth days to rotate once but only 225 Earth days to orbit the Sun.",
+            "Did you know? The shortest war in history lasted just 38 to 45 minutes between Britain and Zanzibar in 1896."
+        ];
+
+        // Change fact dynamically
+        let currentFactIndex = 0;
+        setInterval(() => {
+            currentFactIndex = (currentFactIndex + 1) % facts.length;
+            document.getElementById('fact').textContent = facts[currentFactIndex];
+        }, 5000); // Change fact every 5 seconds
+
+        // Function to check scraping status
+        // function checkStatus() {
+        //     fetch('/check-status')
+        //         .then(response => response.json())
+        //         .then(data => {
+        //             if (data.completed) {
+        //                 // Redirect to download.html if scraping is completed
+        //                 window.location.href = '/download';
+        //             } else if (!data.in_progress) {
+        //                 // Handle unexpected status (e.g., error)
+        //                 alert('An error occurred. Please try again.');
+        //             } else {
+        //                 // Continue polling if still in progress
+        //                 setTimeout(checkStatus, 3000); // Poll every 3 seconds
+        //             }
+        //         })
+        //         .catch(error => console.error('Error checking status:', error));
+        // }
+        function checkLink() {
+        fetch('/get-link')
+            .then(response => response.json())
+            .then(data => {
+                if (data.status === 'success') {
+                    window.location.href = '/download';  // Redirect to the download page
+                } else {
+                    setTimeout(checkLink, 2000);  // Check again after 2 seconds
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching link:', error);
+                setTimeout(checkLink, 2000);  // Retry on error
+            });
+    }
+
+        // Start polling when the page loads
+        window.onload = checkLink;
+    </script>
+</body>
+</html>

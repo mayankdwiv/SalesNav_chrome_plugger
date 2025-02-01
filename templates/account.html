@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter Form</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f9f9f9;
+            margin: 0;
+        }
+
+        .filter-card {
+            background-color: white;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 5px 10px rgba(0, 0, 0, 0.1);
+            width: 400px;
+        }
+
+        .filter-card h2 {
+            font-size: 22px;
+            margin-bottom: 20px;
+            text-align: center;
+            color: #333;
+        }
+
+        .filter-card label {
+            display: block;
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .filter-card select,
+        .filter-card input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            color: #333;
+            box-sizing: border-box;
+        }
+
+        .filter-card input[type="text"]::placeholder {
+            color: #aaa;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-card .submit-btn {
+            background-color: #0073b1;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            font-size: 16px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .filter-card .submit-btn:hover {
+            background-color: #005582;
+        }
+
+        .headcount-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+        }
+
+        .checkbox-container input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .checkbox-container span {
+            font-size: 16px;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div class="filter-card">
+        <h2>Apply Filters</h2>
+        <form action="/apply-filters2" method="post">
+            <div class="filter-group">
+                <label for="HeadquarterLocation">Select Headquarter Location:</label>
+                <select name="HeadquarterLocation" id="HeadquarterLocation">
+                    <option value="">-- Select Location --</option>
+                    <option value="EMEA">EMEA</option>
+                    <option value="North America">North America</option>
+                    <option value="Asia">Asia</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Company Headcount:</label>
+                <div class="headcount-grid">
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="Company_headcount" value="1-10" id="headcount1">
+                        <span>1-10</span>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="Company_headcount" value="11-50" id="headcount2">
+                        <span>11-50</span>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="Company_headcount" value="51-200" id="headcount3">
+                        <span>51-200</span>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="Company_headcount" value="201-500" id="headcount4">
+                        <span>201-500</span>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="Company_headcount" value="501-1000" id="headcount5">
+                        <span>501-1,000</span>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="Company_headcount" value="1001-5000" id="headcount6">
+                        <span>1,001-5,000</span>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="Company_headcount" value="5001-10000" id="headcount7">
+                        <span>5,001-10,000</span>
+                    </div>
+                    <div class="checkbox-container">
+                        <input type="checkbox" name="Company_headcount" value="10000+" id="headcount8">
+                        <span>10,001+</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label for="keywords">Keywords:</label>
+                <input type="text" id="keywords" name="keywords" placeholder="Enter keywords">
+            </div>
+
+            <button type="submit" class="submit-btn">Submit Filters</button>
+        </form>
+    </div>
+</body>
+</html>
