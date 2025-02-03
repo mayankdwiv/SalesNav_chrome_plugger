@@ -14,7 +14,7 @@ def upload_csv_to_drive(csv_filename):
     """Uploads CSV file to Google Drive and returns shareable link."""
     service = authenticate_drive()
 
-    # Generate a unique file name by appending a timestamp
+   
     timestamp = time.strftime("%Y%m%d-%H%M%S")
     unique_filename = f"{csv_filename.split('.')[0]}_{timestamp}.csv"
 
@@ -42,7 +42,7 @@ def write_results_to_csv(results, filename):
     """Appends scraped data to a CSV file."""
     with open(filename, 'a', newline='', encoding='utf-8') as file:
         writer = csv.writer(file)
-        # Write header only if file is empty (i.e., new CSV)
+   
         if file.tell() == 0:
             writer.writerow(['person_name', 'person_title', 'person_company', 'person_location', 'person_link', 'linkedin_url'])
 

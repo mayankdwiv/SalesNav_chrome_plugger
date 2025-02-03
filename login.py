@@ -16,10 +16,9 @@ def login_to_site():
     chrome_options.add_argument("--headless")
     chrome_options.add_argument("--disable-dev-shm-usage")
     chrome_options.add_argument("--no-sandbox")
-    chrome_options.add_argument("--disable-webrtc")  # Disable WebRTC
+    chrome_options.add_argument("--disable-webrtc") 
     chrome_options.add_argument("--disable-features=WebRTC-HW-Decoding,WebRTC-HW-Encoding")
-    chrome_options.add_argument("--log-level=3")  # Suppress verbose logs
-
+    chrome_options.add_argument("--log-level=3")  
     driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
     driver.get("https://www.linkedin.com/feed")
     WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.NAME, "session_key")))

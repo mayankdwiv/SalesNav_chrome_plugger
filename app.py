@@ -20,24 +20,22 @@ app = Flask(__name__)
 app.secret_key = 'supersecretkey'  
 SCRAPED_FILE = 'scraped_data.csv'
 static_folder = os.path.join(os.path.dirname(__file__), 'static')
-print(f"Static folder path: {static_folder}")
+# print(f"Static folder path: {static_folder}")
 
 os.makedirs(static_folder, exist_ok=True) 
-print(f"Static folder created: {os.path.exists(static_folder)}")
+# print(f"Static folder created: {os.path.exists(static_folder)}")
 
 file_path = os.path.join(static_folder, 'details_.csv')
-print(f"File path: {file_path}")
 
-# Create an empty file to ensure it is created
+
 with open(file_path, 'w') as f:
     f.write('')
 
 print(f"File created: {os.path.exists(file_path)}")
-# Load config
+
 with open("C:\\Users\\mayan\\OneDrive\\Desktop\\Linkedin_Scraped\\config.json", 'r') as config_file:
     config = json.load(config_file)
 
-# Thread-safe status tracker
 scraping_status = {'in_progress': False}
 scraping_status['completed'] = False
 
@@ -54,7 +52,7 @@ def scroll_extract(driver, items):
     """Extracts person details from the given items on the page."""
     results = []
     for index, item in enumerate(items):
-        # initialize variables
+      
         person_name = "NA"
         person_title = "NA"
         person_company = "NA"
@@ -63,15 +61,15 @@ def scroll_extract(driver, items):
         linkedin_url = "NA"
         
         try:
-            # Scroll the item into view using JavaScript
+        
             driver.execute_script("arguments[0].scrollIntoView(true);", item)
             print(f"Scrolled to item {index + 1}")
-            # wait till visible
+       
             WebDriverWait(driver, 10).until(EC.visibility_of(item))
 
             item = driver.find_elements(By.CSS_SELECTOR, "li.artdeco-list__item.pl3.pv3")[index]
 
-            # Extract person's name safely
+           
             name_element = item.find_element(By.CSS_SELECTOR, "span[data-anonymize='person-name']")
             person_name = name_element.text if name_element else "NA"
 
@@ -79,23 +77,17 @@ def scroll_extract(driver, items):
             person_link = link_element.get_attribute('href') if link_element else "NA"
             print(f'the person link is {person_link}')
             
-            # Extract LinkedIn URL from Sales Navigator URL
             linkedin_url = get_lk_url_from_sales_lk_url1(person_link)
-             
-            
-            # Extract person's title safely
+      
             title_element = item.find_element(By.CSS_SELECTOR, "span[data-anonymize='title']")
             person_title = title_element.text if title_element else "NA"
 
-            # Extract company name safely
             company_element = item.find_element(By.CSS_SELECTOR, "a[data-anonymize='company-name']")
             person_company = company_element.text if company_element else "NA"
 
-            # Extract location safely
             location_element = item.find_element(By.CSS_SELECTOR, "span[data-anonymize='location']")
             person_location = location_element.text if location_element else "NA"
 
-            # Append results
             results.append({
                 'person_name': person_name,
                 'person_title': person_title,
@@ -105,15 +97,15 @@ def scroll_extract(driver, items):
                 'linkedin_url': linkedin_url,
             })
 
-            # Wait for 1 second to allow any dynamic content to load
+           
             time.sleep(1)
         except Exception as e:
             print(f"Failed to process item at index {index}: {str(e)}")
-            # Append NA values if an error occurred
+      
             results.append({
                 'person_name': person_name,
                 'person_title': person_title,
-                'person_company': person_company,  # Default NA for company as the error occurred here
+                'person_company': person_company,  
                 'person_location': person_location,
                 'person_link': person_link,
                 'linkedin_url': linkedin_url,
@@ -127,36 +119,36 @@ def scrape_results_page(driver):
     """Scrapes data from multiple pages of LinkedIn Sales Navigator."""
     scraping_status['in_progress'] = True
 
-    for i in range(1):  # Loop through all pages
+    for i in range(1):  
         try:
             WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".artdeco-list__item.pl3.pv3")))
             time.sleep(6)
 
-            # Find elements on the page
+         
             li_elements_no_soup = driver.find_elements(By.CSS_SELECTOR, "li.artdeco-list__item.pl3.pv3")
-            # Scroll and extract information from the current page
+       
             scroll_extract(driver, li_elements_no_soup)
 
-            # Try to find the 'Next' button; if it's there and clickable, click it
-            try:
-                next_button = driver.find_element(By.CSS_SELECTOR, "button.artdeco-pagination__button--next")
-                if next_button.is_enabled():
-                    next_button.click()
-                    print("Navigated to next page")
-                else:
-                    print("Next button not enabled, last page reached.")
-                    break
-            except NoSuchElementException:
-                print("No more pages to navigate.")
-                break
-            except Exception as e:
-                print(f"Error navigating to next page: {str(e)}")
-                break
+           
+            # try:
+            #     next_button = driver.find_element(By.CSS_SELECTOR, "button.artdeco-pagination__button--next")
+            #     if next_button.is_enabled():
+            #         next_button.click()
+            #         print("Navigated to next page")
+            #     else:
+            #         print("Next button not enabled, last page reached.")
+            #         break
+            # except NoSuchElementException:
+            #     print("No more pages to navigate.")
+            #     break
+            # except Exception as e:
+            #     print(f"Error navigating to next page: {str(e)}")
+            #     break
         except Exception as e:
             print(f"Error scraping page {i+1}: {str(e)}")
             break
 
-    # Update scraping status
+    #
 
     link=upload_csv_to_drive(file_path)
     scraping_status['in_progress'] = False
@@ -171,7 +163,7 @@ def apply_filters(driver, changed_jobs, posted_on_linkedin, selected_Industry, K
     "Marketing": "15",
     "Engineering": "8",
 }
-    # Add filters based on user input
+
     if changed_jobs:
         filters.append(
             "(type%3ARECENTLY_CHANGED_JOBS%2Cvalues%3AList((id%3ARPC%2Ctext%3AChanged%2520jobs%2CselectionType%3AINCLUDED)))"
@@ -187,7 +179,7 @@ def apply_filters(driver, changed_jobs, posted_on_linkedin, selected_Industry, K
                 f"(type%3AFUNCTION%2Cvalues%3AList((id%3A{Industry_id}%2Ctext%3A{selected_Industry.replace(' ', '%20')}%2CselectionType%3AINCLUDED)))"
             )
     if Company_headcount:
-        # Map the Company_headcount values to their corresponding LinkedIn filter IDs and text
+       
         headcount_mapping = {
             "1-10": ("B", "1-10"),
             "11-50": ("C", "11-50"),
@@ -199,14 +191,14 @@ def apply_filters(driver, changed_jobs, posted_on_linkedin, selected_Industry, K
             "10000+": ("I", "10,001+")
         }
         
-        # Create a list of selected headcount filters
+ 
         headcount_filters = []
         for headcount in Company_headcount:
             if headcount in headcount_mapping:
                 id, text = headcount_mapping[headcount]
                 headcount_filters.append(f"(id%3A{id}%2Ctext%3A{text.replace(' ', '%20')}%2CselectionType%3AINCLUDED)")
         
-        # Add the COMPANY_HEADCOUNT filter if any headcount ranges are selected
+      
         if headcount_filters:
             filters.append(
                 f"(type%3ACOMPANY_HEADCOUNT%2Cvalues%3AList({','.join(headcount_filters)}))"
@@ -214,19 +206,17 @@ def apply_filters(driver, changed_jobs, posted_on_linkedin, selected_Industry, K
     
     base_url = "https://www.linkedin.com/sales/search/people?query=("
     
-    # Add the recentSearchParam
+    
     recent_search_param = "recentSearchParam%3A(id%3A4379678420%2CdoLogHistory%3Atrue)"
     
-    # Add keywords if provided
+  
     keywords_param = f",keywords%3A{Keywords.replace(' ', '%20')}" if Keywords else ""
     
-    # Add filters if any
     filter_section = f",filters%3AList({','.join(filters)})" if filters else ""
     
-    # Construct the final URL
     final_url = f"{base_url}{recent_search_param}{keywords_param}{filter_section})&viewAllFilters=true"
     
-    # Navigate to the final URL
+   
     # final_url = "https://www.linkedin.com/sales/search/people?query=(spellCorrectionEnabled%3Atrue%2CrecentSearchParam%3A(id%3A3479457505%2CdoLogHistory%3Atrue)%2Cfilters%3AList((type%3ACURRENT_TITLE%2Cvalues%3AList((text%3AProduct%2520Marketing%2520Leader%2CselectionType%3AINCLUDED))))%2Ckeywords%3AGen%2520AI)&sessionId=m0yyfnqYSL%2By5ONrJMITrw%3D%3D"
     driver.get(final_url)
     time.sleep(5) 
@@ -237,7 +227,7 @@ def apply_filters(driver, changed_jobs, posted_on_linkedin, selected_Industry, K
 def apply_filters_account(driver, Keywords, Company_headcount, HeadquarterLocation):
     """Applies filters for company search using the Selenium driver."""
     filters = []
-    print(f"HeadquarterLocation input: {HeadquarterLocation}")  # Debugging
+    print(f"HeadquarterLocation input: {HeadquarterLocation}") 
 
   
     headcount_mapping = {
@@ -281,16 +271,16 @@ def apply_filters_account(driver, Keywords, Company_headcount, HeadquarterLocati
                 id, text = location_mapping[location]
                 location_filters.append(f"(id%3A{id}%2Ctext%3A{quote(text)}%2CselectionType%3AINCLUDED)")
 
-    print(f"location_filters: {location_filters}")  # Debugging
+    print(f"location_filters: {location_filters}")  
 
     if location_filters:
         filters.append(f"(type%3AREGION%2Cvalues%3AList({','.join(location_filters)}))")
 
-    print(f"filters: {filters}")  # Debugging
+    print(f"filters: {filters}")  
 
     base_url = "https://www.linkedin.com/sales/search/company?query=("
 
-    # Add spell correction and filters
+   
     spell_correction = "spellCorrectionEnabled%3Atrue"
     filter_section = f",filters%3AList({','.join(filters)})" if filters else ""
 
@@ -299,11 +289,11 @@ def apply_filters_account(driver, Keywords, Company_headcount, HeadquarterLocati
 
      
     final_url = f"{base_url}{spell_correction}{filter_section}{keywords_param})&viewAllFilters=true"
-    print(f"Final URL: {final_url}")  # Debugging
+    print(f"Final URL: {final_url}")  
 
   
     driver.get(final_url)
-    time.sleep(5)  # Simulate browsing
+    time.sleep(5)  
     
     return scrape_results_page(driver)
 
@@ -333,7 +323,7 @@ def apply_filters_route():
     def background_task(changed_jobs, posted_on_linkedin, selected_industry, Keywords, Company_headcount):
         driver = login_to_site()
         link = apply_filters(driver, changed_jobs, posted_on_linkedin, selected_industry, Keywords, Company_headcount)
-        link_queue1.put(link)  # Put the link into the queue
+        link_queue1.put(link) 
         scraping_status['completed'] = True
 
     thread = threading.Thread(
@@ -349,7 +339,7 @@ def apply_filters_route():
 
 @app.route('/apply-filters2', methods=['POST'])
 def apply_filters_account_route():
-    """Route to handle filter application."""
+    """Route to handle filter application for company search."""
     
     HeadquarterLocation= request.form.get('HeadquarterLocation')
     Company_headcount = request.form.getlist('Company_headcount')
@@ -358,7 +348,7 @@ def apply_filters_account_route():
     def background_task(Keywords, Company_headcount,HeadquarterLocation):
         driver = login_to_site()
         link = apply_filters_account(driver,Keywords, Company_headcount,HeadquarterLocation)
-        link_queue2.put(link)  # Put the link into the queue
+        link_queue2.put(link) 
         scraping_status['completed'] = True
 
     thread = threading.Thread(
@@ -375,9 +365,9 @@ def apply_filters_account_route():
 def get_link():
     """Retrieve the Google Sheets link from the queue and store it in the session."""
     try:
-        google_sheets_link = link_queue1.get(timeout=10)  # Wait for the link to be available
+        google_sheets_link = link_queue1.get(timeout=10)  
         session['google_sheets_link'] = google_sheets_link
-        session.modified = True  # Ensure the session is saved
+        session.modified = True 
         return jsonify({"status": "success", "link": google_sheets_link})
     except queue.Empty:
         return jsonify({"status": "error", "message": "Link not available yet"}), 404
