@@ -34,7 +34,7 @@ def upload_csv_to_drive(csv_filename):
     ).execute()
 
     shareable_link = f"https://docs.google.com/spreadsheets/d/{file_id}"
-    print(f"Uploaded CSV to Google Drive: {shareable_link}")
+    # print(f"Uploaded CSV to Google Drive: {shareable_link}")
     
     return shareable_link
 

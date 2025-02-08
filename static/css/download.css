@@ -1,0 +1,123 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+}
+
+.success-card {
+    background: rgba(255, 255, 255, 0.95);
+    border-radius: 24px;
+    padding: 40px;
+    width: 500px;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.success-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #0a66c2, #057642);
+}
+
+.success-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto 30px;
+    background: linear-gradient(45deg, #0a66c2, #057642);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    animation: pulse 2s infinite;
+}
+
+.success-icon::after {
+    content: '✓';
+    font-size: 40px;
+    color: white;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(10, 102, 194, 0.4); }
+    70% { box-shadow: 0 0 0 20px rgba(10, 102, 194, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(10, 102, 194, 0); }
+}
+
+h1 {
+    font-size: 28px;
+    color: #1a1a1a;
+    margin: 0 0 20px;
+    position: relative;
+}
+
+.description {
+    font-size: 16px;
+    color: #666;
+    margin-bottom: 30px;
+    line-height: 1.5;
+}
+
+.sheets-link {
+    display: inline-block;
+    padding: 16px 32px;
+    background: linear-gradient(135deg, #0a66c2, #057642);
+    color: white;
+    text-decoration: none;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 16px;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+}
+
+.sheets-link:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(10, 102, 194, 0.2);
+}
+
+.sheets-link::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    100% { left: 100%; }
+}
+
+.error-message {
+    color: #666;
+    font-style: italic;
+    padding: 20px;
+    background: rgba(0, 0, 0, 0.05);
+    border-radius: 12px;
+}
+
+@media (max-width: 600px) {
+    .success-card {
+        width: 90%;
+        padding: 30px 20px;
+    }
+}

@@ -3,8 +3,9 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-from login import login_to_site
+from login import login_to_site, load_cookies_and_open
 from drive_authenticate import write_results_to_csv, upload_csv_to_drive
+from Database.mongo_db import save_search, get_recent_searches
 import os
 import time
 import threading
@@ -121,7 +122,7 @@ def scrape_results_page(driver):
 
     for i in range(1):  
         try:
-            WebDriverWait(driver, 10).until(EC.presence_of_element_located((By.CSS_SELECTOR, ".artdeco-list__item.pl3.pv3")))
+            WebDriverWait(driver, 30).until(EC.visibility_of_all_elements_located((By.CSS_SELECTOR, ".artdeco-list__item.pl3.pv3")))
             time.sleep(6)
 
          
@@ -130,20 +131,20 @@ def scrape_results_page(driver):
             scroll_extract(driver, li_elements_no_soup)
 
            
-            # try:
-            #     next_button = driver.find_element(By.CSS_SELECTOR, "button.artdeco-pagination__button--next")
-            #     if next_button.is_enabled():
-            #         next_button.click()
-            #         print("Navigated to next page")
-            #     else:
-            #         print("Next button not enabled, last page reached.")
-            #         break
-            # except NoSuchElementException:
-            #     print("No more pages to navigate.")
-            #     break
-            # except Exception as e:
-            #     print(f"Error navigating to next page: {str(e)}")
-            #     break
+            try:
+                next_button = driver.find_element(By.CSS_SELECTOR, "button.artdeco-pagination__button--next")
+                if next_button.is_enabled():
+                    next_button.click()
+                    print("Navigated to next page")
+                else:
+                    print("Next button not enabled, last page reached.")
+                    break
+            except NoSuchElementException:
+                print("No more pages to navigate.")
+                break
+            except Exception as e:
+                print(f"Error navigating to next page: {str(e)}")
+                break
         except Exception as e:
             print(f"Error scraping page {i+1}: {str(e)}")
             break
@@ -155,15 +156,42 @@ def scrape_results_page(driver):
     scraping_status['completed'] = True
     return link
 
-def apply_filters(driver, changed_jobs, posted_on_linkedin, selected_Industry, Keywords, Company_headcount):
+def apply_filters(driver, Geography, changed_jobs, posted_on_linkedin, selected_Industry, Keywords, Company_headcount):
     """Applies filters using the Selenium driver."""
     filters = []
     Industry_IDS = {
     "Sales": "25",
     "Marketing": "15",
     "Engineering": "8",
+    "Information Technology": "13",
+    "Business Development": "4",
 }
 
+    # Geography mapping to LinkedIn Sales Navigator filter IDs
+    Geography_IDS = {
+        "North America": "102221843",
+        "Asia": "102393603",
+        "EMEA": "91000007",
+        "India": "102713980",
+        "Europe": "100506914",
+        "Africa": "103537801",
+        "South America": "104514572",
+    }
+
+    # Add Geography filter if any regions are selected
+    if Geography:
+        geography_filters = []
+        for region in Geography:
+            if region in Geography_IDS:
+                region_id = Geography_IDS[region]
+                geography_filters.append(f"(id%3A{region_id}%2Ctext%3A{region.replace(' ', '%20')}%2CselectionType%3AINCLUDED)")
+        
+        if geography_filters:
+            filters.append(
+                f"(type%3AREGION%2Cvalues%3AList({','.join(geography_filters)}))"
+            )
+
+    # Add other filters
     if changed_jobs:
         filters.append(
             "(type%3ARECENTLY_CHANGED_JOBS%2Cvalues%3AList((id%3ARPC%2Ctext%3AChanged%2520jobs%2CselectionType%3AINCLUDED)))"
@@ -179,7 +207,6 @@ def apply_filters(driver, changed_jobs, posted_on_linkedin, selected_Industry, K
                 f"(type%3AFUNCTION%2Cvalues%3AList((id%3A{Industry_id}%2Ctext%3A{selected_Industry.replace(' ', '%20')}%2CselectionType%3AINCLUDED)))"
             )
     if Company_headcount:
-       
         headcount_mapping = {
             "1-10": ("B", "1-10"),
             "11-50": ("C", "11-50"),
@@ -191,35 +218,36 @@ def apply_filters(driver, changed_jobs, posted_on_linkedin, selected_Industry, K
             "10000+": ("I", "10,001+")
         }
         
- 
         headcount_filters = []
         for headcount in Company_headcount:
             if headcount in headcount_mapping:
                 id, text = headcount_mapping[headcount]
                 headcount_filters.append(f"(id%3A{id}%2Ctext%3A{text.replace(' ', '%20')}%2CselectionType%3AINCLUDED)")
         
-      
         if headcount_filters:
             filters.append(
                 f"(type%3ACOMPANY_HEADCOUNT%2Cvalues%3AList({','.join(headcount_filters)}))"
             )
     
+    # Base URL for LinkedIn Sales Navigator
     base_url = "https://www.linkedin.com/sales/search/people?query=("
     
-    
+    # Recent search parameter
     recent_search_param = "recentSearchParam%3A(id%3A4379678420%2CdoLogHistory%3Atrue)"
     
-  
+    # Keywords parameter
     keywords_param = f",keywords%3A{Keywords.replace(' ', '%20')}" if Keywords else ""
     
+    # Filters section
     filter_section = f",filters%3AList({','.join(filters)})" if filters else ""
     
+    # Construct the final URL
     final_url = f"{base_url}{recent_search_param}{keywords_param}{filter_section})&viewAllFilters=true"
+    print(final_url)
     
-   
-    # final_url = "https://www.linkedin.com/sales/search/people?query=(spellCorrectionEnabled%3Atrue%2CrecentSearchParam%3A(id%3A3479457505%2CdoLogHistory%3Atrue)%2Cfilters%3AList((type%3ACURRENT_TITLE%2Cvalues%3AList((text%3AProduct%2520Marketing%2520Leader%2CselectionType%3AINCLUDED))))%2Ckeywords%3AGen%2520AI)&sessionId=m0yyfnqYSL%2By5ONrJMITrw%3D%3D"
+    # Navigate to the final URL
     driver.get(final_url)
-    time.sleep(5) 
+    time.sleep(5)  # Wait for the page to load
     
     return scrape_results_page(driver)
 
@@ -319,16 +347,24 @@ def apply_filters_route():
     selected_industry = request.form.get('INDUSTRY')
     Company_headcount = request.form.getlist('Company_headcount')
     Keywords = request.form.get('keywords')
+    Geography = request.form.getlist('Geography')
 
-    def background_task(changed_jobs, posted_on_linkedin, selected_industry, Keywords, Company_headcount):
-        driver = login_to_site()
-        link = apply_filters(driver, changed_jobs, posted_on_linkedin, selected_industry, Keywords, Company_headcount)
-        link_queue1.put(link) 
+    def background_task(Geography, changed_jobs, posted_on_linkedin, selected_industry, Keywords, Company_headcount):
+        driver = load_cookies_and_open()
+        link = apply_filters(driver, Geography, changed_jobs, posted_on_linkedin, selected_industry, Keywords, Company_headcount)
+        if link:
+            # print(f"Generated Google Sheets link: {link}")
+            link_queue1.put(link)  # Put the link into the queue
+
+            # Store search history in MongoDB
+            save_search("Leads", Keywords, selected_industry, Company_headcount, link,Geography)
+        else:
+            print("No link generated. Scraping may have failed.") 
         scraping_status['completed'] = True
 
     thread = threading.Thread(
         target=background_task,
-        args=(changed_jobs, posted_on_linkedin, selected_industry, Keywords, Company_headcount)
+        args=(Geography,changed_jobs,posted_on_linkedin, selected_industry, Keywords, Company_headcount)
     )
     thread.daemon = True
     thread.start()
@@ -336,7 +372,11 @@ def apply_filters_route():
     scraping_status['in_progress'] = True
     return render_template('status.html')
 
-
+@app.route('/recent-searches', methods=['GET'])
+def recent_searches():
+    """Fetch the last 5 searches from MongoDB."""
+    searches = get_recent_searches()
+    return jsonify(searches)
 @app.route('/apply-filters2', methods=['POST'])
 def apply_filters_account_route():
     """Route to handle filter application for company search."""

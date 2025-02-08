@@ -1,0 +1,296 @@
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f5f7fa;
+    margin: 0;
+    padding: 20px;
+  }
+
+  .filter-card {
+    background: white;
+    border-radius: 24px;
+    padding: 40px;
+    width: 500px;
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.05);
+  }
+
+  h2 {
+    text-align: center;
+    color: #1a1a1a;
+    font-size: 28px;
+    margin-bottom: 40px;
+    position: relative;
+  }
+
+  h2::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: #00a0dc;
+    border-radius: 2px;
+  }
+
+  .section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #666;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* Checkbox Styles */
+  .checkbox-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-bottom: 30px;
+  }
+
+  .checkbox-wrapper {
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 12px 16px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .checkbox-wrapper:hover {
+    border-color: #00a0dc;
+    background: #f8fbff;
+  }
+
+  .checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .custom-checkbox {
+    width: 20px;
+    height: 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    position: relative;
+    transition: all 0.2s ease;
+  }
+
+  input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    cursor: pointer;
+  }
+
+  input[type="checkbox"]:checked + .custom-checkbox {
+    background: #00a0dc;
+    border-color: #00a0dc;
+  }
+
+  input[type="checkbox"]:checked + .custom-checkbox::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 5px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .checkbox-label {
+    font-size: 14px;
+    color: #333;
+  }
+
+  /* Dropdown Styles */
+  select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 30px;
+    appearance: none;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") no-repeat;
+    background-position: calc(100% - 12px) center;
+    cursor: pointer;
+  }
+
+  select:focus {
+    outline: none;
+    border-color: #00a0dc;
+  }
+
+  /* Enhanced Dropdown Option Styles */
+  select option {
+    padding: 10px 12px;
+    line-height: 1.5;
+    background-color: white;
+  }
+
+  select option:hover {
+    background-color: #f0f8ff;
+  }
+
+  /* Adds a subtle separator between options */
+  select option + option {
+    border-top: 1px solid #e0e0e0;
+  }
+
+  /* Input Text Styles */
+  input[type="text"] {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #333;
+    margin-bottom: 30px;
+    box-sizing: border-box;
+  }
+
+  input[type="text"]:focus {
+    outline: none;
+    border-color: #00a0dc;
+  }
+
+  /* Button Styles */
+  .submit-button {
+    width: 100%;
+    padding: 16px;
+    border: none;
+    border-radius: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: white;
+    background: linear-gradient(90deg, #0077b5, #00a0dc);
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+
+  .submit-button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+  }
+
+  /* Multi-select Dropdown Styles */
+  .multi-select {
+    position: relative;
+    width: 100%;
+    margin-bottom: 30px;
+  }
+
+  .multi-select select {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    font-size: 14px;
+    color: #333;
+    appearance: none;
+    background: white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='%23666' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E") no-repeat;
+    background-position: calc(100% - 12px) center;
+    cursor: pointer;
+  }
+
+  .multi-select select:focus {
+    outline: none;
+    border-color: #00a0dc;
+  }
+
+  .multi-select select option {
+    padding: 10px 12px;
+    line-height: 1.5;
+    background-color: white;
+  }
+
+  .multi-select select option:hover {
+    background-color: #f0f8ff;
+  }
+
+  .multi-select select option + option {
+    border-top: 1px solid #e0e0e0;
+  }
+
+  .multi-select .selected-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+  }
+
+  .multi-select .selected-options .tag {
+    display: flex;
+    align-items: center;
+    background: #f0f4f8;
+    border-radius: 12px;
+    padding: 6px 12px;
+    font-size: 14px;
+    color: #333;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .multi-select .selected-options .tag:hover {
+    background: #e0e7ef;
+  }
+
+  .multi-select .selected-options .tag-remove {
+    margin-left: 8px;
+    color: #666;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .multi-select .selected-options .tag-remove:hover {
+    color: #ff4d4d;
+  }
+  .section {
+margin-bottom: 30px;
+}
+
+.section-header {
+display: flex;
+align-items: center;
+justify-content: space-between;
+}
+
+.section-title {
+font-size: 14px;
+font-weight: 600;
+color: #666;
+text-transform: uppercase;
+letter-spacing: 0.5px;
+}
+
+.selected-options {
+display: flex;
+flex-wrap: wrap;
+gap: 8px;
+}
+
+.tag {
+display: flex;
+align-items: center;
+background: #f0f4f8;
+border-radius: 12px;
+padding: 6px 12px;
+font-size: 14px;
+color: #333;
+}
+
+.tag-remove {
+margin-left: 8px;
+color: #666;
+font-size: 12px;
+}

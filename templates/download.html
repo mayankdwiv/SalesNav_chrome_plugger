@@ -4,67 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Download Results</title>
-    <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            background: linear-gradient(to bottom, #ffffff, #f1f1f1);
-            color: #333;
-            overflow: hidden;
-        }
-
-        .container {
-            text-align: center;
-            max-width: 600px;
-            padding: 20px;
-            background-color: #f9f9f9;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
-        }
-
-        h1 {
-            font-size: 2.5rem;
-            margin-bottom: 10px;
-            color: #444;
-        }
-
-        p {
-            font-size: 1.2rem;
-            margin-bottom: 30px;
-            color: #666;
-        }
-
-        .download-link {
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #0073e6;
-            text-decoration: none;
-            border: 2px solid #0073e6;
-            padding: 10px 20px;
-            border-radius: 5px;
-            display: inline-block;
-            transition: background 0.3s, color 0.3s;
-        }
-
-        .download-link:hover {
-            background: #0073e6;
-            color: #fff;
-        }
-    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/download.css') }}">
 </head>
+
+
 <body>
-    <div class="container">
-        <h1>Download Completed!</h1>
-        <p>Your data has been successfully scraped and saved.</p>
+    <div class="success-card">
+        <div class="success-icon"></div>
+        <h1>Success!</h1>
+        <p class="description">Your data has been processed and is ready for viewing</p>
 
         {% if google_sheets_link %}
-            <a href="{{ google_sheets_link }}" class="download-link" target="_blank">View Google Sheet</a>
+            <a href="{{ google_sheets_link }}" class="sheets-link" target="_blank">
+                Open in Google Sheets
+            </a>
         {% else %}
-            <p>Sorry, the Google Sheet URL is not available.</p>
+            <div class="error-message">
+                The Google Sheet link is currently unavailable
+            </div>
         {% endif %}
     </div>
 </body>
