@@ -1,8 +1,11 @@
 Flask
 selenium
 webdriver-manager
-google-api-python-client
+beautifulsoup4
+pymongo
 google-auth
 google-auth-oauthlib
 google-auth-httplib2
-gunicorn
+google-api-python-client
+oauth2client
+requests
