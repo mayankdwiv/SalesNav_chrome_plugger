@@ -49,3 +49,26 @@ def write_results_to_csv(results, filename):
         for result in results:
             writer.writerow([result['person_name'], result['person_title'], result['person_company'], result['person_location'], result['person_link'], result['linkedin_url']])
     return 
+
+def write_results_to_csv1(results, filename):
+    """
+    Appends scraped data to a CSV file.
+    If the file is empty, writes the header row first.
+    """
+    with open(filename, 'a', newline='', encoding='utf-8') as file:
+        writer = csv.writer(file)
+        
+        # Write header only if the file is empty
+        if file.tell() == 0:
+            # Corrected header order to match data structure
+            writer.writerow(['Name', 'Current Role', 'Location', 'Profile Link'])
+        
+        # Write each result with correct key names
+        for result in results:
+            writer.writerow([
+                result['Name'],
+                result['Current Role'],  # This was missing from your CSV
+                result['Location'],
+                result['Profile Link']   # Changed from 'Link' to 'Profile Link'
+            ])
+    return

@@ -24,7 +24,7 @@ def time_ago(timestamp):
     else:
         return timestamp.strftime("%Y-%m-%d")  # Show date for older entries
 
-def save_search(section, keywords, industry, company_headcount, link,Geography):
+def save_search1(section, keywords, industry, company_headcount, link,Geography):
     """Save a search entry to MongoDB."""
     search_entry = {
         "keywords": keywords,
@@ -39,19 +39,46 @@ def save_search(section, keywords, industry, company_headcount, link,Geography):
     inserted_id = searches_collection.insert_one(search_entry).inserted_id
     print(f"Search saved with ID {inserted_id}")
 
-def get_recent_searches(limit=5):
-    """Fetch the most recent searches from MongoDB."""
+def save_search2(section, Keywords,title,name, link):
+    """Save a search entry to MongoDB."""
+    search_entry = {
+        "keywords": Keywords,
+        "title": title,
+        "name": name,
+        "link": link,
+        "timestamp": datetime.now(),
+        "section": section
+    }
+    inserted_id = searches_collection.insert_one(search_entry).inserted_id
+    print(f"Search saved with ID {inserted_id}")
+
+def get_recent_searches(section=None, limit=5):
+    """Fetch the most recent searches from MongoDB based on the section."""
     searches = searches_collection.find().sort("timestamp", -1).limit(limit)
     search_list = []
+
     for search in searches:
-        search_list.append({
-            "keywords": search["keywords"],
-            "industry": search["industry"],
-            "company_headcount": search["company_headcount"],
-            "link": search["link"],
-            "timestamp": time_ago(search["timestamp"]),
-            "section": search.get("section", "Leads"),
-            "Geography": search.get("Geography", None)
-        })
-    
+        if search["section"] == "Sales-Navigator":
+            search_entry = {
+                "keywords": search["keywords"],
+                "industry": search.get("industry", None),
+                "company_headcount": search.get("company_headcount", None),
+                "link": search["link"],
+                "timestamp": time_ago(search["timestamp"]),
+                "section": search.get("section"),
+                "Geography": search.get("Geography", None)
+            }
+        else:
+            search_entry = {
+                "keywords": search["keywords"],
+                "title": search.get("title", None),
+                "name": search.get("name", None),
+                "link": search["link"],
+                "timestamp": time_ago(search["timestamp"]),
+                "section": search.get("section")
+            }
+       
+
+        search_list.append(search_entry)
+
     return search_list

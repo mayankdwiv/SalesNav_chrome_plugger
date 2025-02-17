@@ -9,6 +9,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 import json,pickle
+import os
 with open("C:\\Users\\mayan\\OneDrive\\Desktop\\Linkedin_Scraped\\config.json", 'r') as config_file:
     config = json.load(config_file)
 def login_to_site():
@@ -106,7 +107,50 @@ def login_to_site():
 #     driver.get("https://www.linkedin.com/feed")
 #     time.sleep(10)
 #     return driver
+def login():
+    options = webdriver.EdgeOptions()
 
+    # add headless
+    # options.add_argument('headless')
+
+    driver = webdriver.Edge(options=options)
+    # driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+    # print("Chrome WebDriver initialized successfully.")
+    driver.get('https://www.linkedin.com/uas/login')
+
+
+    cookies_file = 'cookies.pkl'
+    try:
+        if os.path.exists(cookies_file):
+            print("Cookies file found. Logging in using cookies...")
+            with open(cookies_file, 'rb') as file:
+                cookies = pickle.load(file)
+                for cookie in cookies:
+                    driver.add_cookie(cookie)
+                driver.refresh()
+        else:
+            raise FileNotFoundError
+    except (FileNotFoundError, Exception):
+        print("Cookies file not found or invalid. Logging in using username and password...")
+
+
+        uname = driver.find_element(By.ID, "username")
+        uname.send_keys(config['email'])
+        pword = driver.find_element(By.ID, 'password')
+        pword.send_keys(config['password'])
+        driver.find_element(By.XPATH, "//button[@type='submit']").click()
+        
+    def check_page():
+        return "https://www.linkedin.com/feed/" in driver.current_url
+
+    while not check_page():
+        time.sleep(5)
+
+    if not os.path.exists(cookies_file):
+        cookies = driver.get_cookies()
+        with open(cookies_file, 'wb') as file:
+            pickle.dump(cookies, file)
+    return driver
 def load_cookies_and_open():
     
     # chrome_options.add_argument("--headless")

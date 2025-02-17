@@ -246,11 +246,11 @@
     <div class="search-card">
         <h2>Start New Search</h2>
         <div class="search-buttons">
-            <form action="/Lead" method="post">
-                <button class="search-button" type="submit">Lead Search</button>
+            <form action="/Sales_Navigator" method="post">
+                <button class="search-button" type="submit">Sales Navigator</button>
             </form>
-            <form action="/Account" method="post">
-                <button class="search-button" type="submit">Account Search</button>
+            <form action="/linkedin" method="post">
+                <button class="search-button" type="submit">Linkedin</button>
             </form>
         </div>
         
@@ -263,7 +263,7 @@
     </div>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
+        document.addEventListener('DOMContentLoaded', function () {
             fetch('/recent-searches')
                 .then(response => response.json())
                 .then(searches => {
@@ -272,39 +272,48 @@
                         list.innerHTML = '<div class="no-searches">No recent searches found</div>';
                         return;
                     }
-                    
+    
                     searches.forEach(search => {
                         const item = document.createElement('div');
                         item.className = 'recent-search-item';
-                        
-                        let tags = [];
-                        if (search.keywords && search.keywords !== 'N/A') {
-                            tags.push(`<span class="search-tag tag-keyword">🔍 ${search.keywords}</span>`);
+    
+                        // Completely separate rendering logic for Linkedin and Sales-Navigator
+                        if (search.section === "Sales-Navigator") {
+                            // Render for Linkedin section
+                            item.innerHTML = `
+                                <div class="search-header">
+                                    <div class="search-type">Sales-Navigator Search</div>
+                                    <div class="search-time">${search.timestamp}</div>
+                                </div>
+                                <div class="search-content">
+                                    ${search.keywords && search.keywords !== 'N/A' ? `<span class="search-tag tag-keyword">🔍 ${search.keywords}</span>` : ''}
+                                    ${search.industry && search.industry !== 'N/A' ? `<span class="search-tag tag-industry">🏢 ${search.industry}</span>` : ''}
+                                    ${search.company_headcount && search.company_headcount.length > 0 ? `<span class="search-tag tag-headcount">👥 ${search.company_headcount.join(', ')}</span>` : ''}
+                                    ${search.Geography && search.Geography !== 'N/A' ? `<span class="search-tag tag-geography">🌍 ${search.Geography}</span>` : ''}
+                                    ${!search.keywords && !search.industry && !search.company_headcount && !search.Geography ? '<div class="no-filters">No filters applied</div>' : ''}
+                                </div>
+                            `;
+                        } else if (search.section === "Linkedin") {
+                            // Render for Sales-Navigator section
+                            item.innerHTML = `
+                                <div class="search-header">
+                                    <div class="search-type">Linkedin Search</div>
+                                    <div class="search-time">${search.timestamp}</div>
+                                </div>
+                                <div class="search-content">
+                                    ${search.keywords && search.keywords !== 'N/A' ? `<span class="search-tag tag-keyword">🔍 ${search.keywords}</span>` : ''}
+                                    ${search.title && search.title !== 'N/A' ? `<span class="search-tag tag-title">📌 ${search.title}</span>` : ''}
+                                    ${search.name && search.name !== 'N/A' ? `<span class="search-tag tag-name">👤 ${search.name}</span>` : ''}
+                                    ${!search.keywords && !search.title && !search.name ? '<div class="no-filters">No filters applied</div>' : ''}
+                                </div>
+                            `;
                         }
-                        if (search.industry && search.industry !== 'N/A') {
-                            tags.push(`<span class="search-tag tag-industry">🏢 ${search.industry}</span>`);
-                        }
-                        if (search.company_headcount && search.company_headcount.length > 0) {
-                            tags.push(`<span class="search-tag tag-headcount">👥 ${search.company_headcount.join(', ')}</span>`);
-                        }
-                        if (search.Geography && search.Geography !== 'N/A') {
-                            tags.push(`<span class="search-tag tag-keyword">🌍 ${search.Geography}</span>`);
-                        }
-                        
-                        item.innerHTML = `
-                            <div class="search-header">
-                                <div class="search-type">${search.section} Search</div>
-                                <div class="search-time">${search.timestamp}</div>
-                            </div>
-                            <div class="search-content">
-                                ${tags.length > 0 ? tags.join('') : '<div class="no-filters">No filters applied</div>'}
-                            </div>
-                        `;
-                        
+    
+                        // Add click event to redirect to the search link
                         item.addEventListener('click', () => {
                             window.location.href = search.link;
                         });
-                        
+    
                         list.appendChild(item);
                     });
                 });
